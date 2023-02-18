@@ -12,8 +12,9 @@ export class Scanner {
         let line: string;
         let dual: boolean;
         let lineNumber: number = (script.match(regex.newline) || []).length + 1;
+        const firstLine = source.length - 1
 
-        for (line of source) {
+        for (const [index, line] of source.entries()) {
             let match: string[];
 
             const lineNewlines = (line.match(regex.newline) || []).length
@@ -24,7 +25,7 @@ export class Scanner {
             lineNumber -= lineNewlines + 1;
 
             /** title page */
-            if (regex.title_page.test(line) && lineNumber === 0) {
+            if (regex.title_page.test(line) && index === firstLine) {
                 match = line.replace(regex.title_page, '\n$1').split(regex.splitter).reverse();
                 let linePosition = lineNumber + lineNewlines
                 for (const item of match) {

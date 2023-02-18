@@ -85,6 +85,32 @@ describe('Fountain Markup Parser', () => {
         expect(expected).toEqual(actual);
     });
 
+    it('should parse title page line numbers', () => {
+        const title_page = `Title:
+                            _**BRICK & STEEL**_
+                            _**FULL RETIRED**_
+                        Credit: Written by
+                        Author: Stu Maschwitz
+                        Source: Story by KTM
+                        Draft date: 1/27/2012
+                        Contact:
+                            Next Level Productions
+                            1588 Mission Dr.
+                            Solvang, CA 93463`;
+
+        let actual: Script = fountain.parse(title_page, false, true);
+        let expected: Script = {
+            title: 'BRICK & STEEL FULL RETIRED',
+            html: {
+                title_page: '<h1 data-line="1"><span class="bold underline">BRICK & STEEL</span><br /><span class="bold underline">FULL RETIRED</span></h1><p class="credit" data-line="3">Written by</p><p class="authors" data-line="4">Stu Maschwitz</p><p class="source" data-line="5">Story by KTM</p><p class="draft-date" data-line="6">1/27/2012</p><p class="contact" data-line="7">Next Level Productions<br />1588 Mission Dr.<br />Solvang, CA 93463</p>',
+                script: ''
+            },
+            tokens: undefined
+        };
+
+        expect(expected).toEqual(actual);
+    });
+
     it('should parse a scene heading', () => {
         const sceneHeading = "EXT. BRICK'S PATIO - DAY";
 
@@ -156,6 +182,21 @@ describe('Fountain Markup Parser', () => {
         let actual = output.html.script;
 
         let expected = '<div class="dual-dialogue"><div class="dialogue left"><h4>STEEL</h4><p>Screw retirement.</p></div><div class="dialogue right"><h4>BRICK</h4><p>Screw retirement.</p></div></div>';
+
+        expect(expected).toBe(actual);
+    });
+
+    it('should parse dual dialog line numbers', () => {
+        const dualDialog = `STEEL
+                        Screw retirement.
+
+                        BRICK ^
+                        Screw retirement.`;
+
+        let output: Script = fountain.parse(dualDialog, false, true);
+        let actual = output.html.script;
+
+        let expected = '<div class="dual-dialogue" data-line="0"><div class="dialogue left" data-line="0"><h4 data-line="0">STEEL</h4><p data-line="1">Screw retirement.</p></div><div class="dialogue right" data-line="3"><h4 data-line="3">BRICK</h4><p data-line="4">Screw retirement.</p></div></div>';
 
         expect(expected).toBe(actual);
     });

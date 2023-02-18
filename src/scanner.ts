@@ -20,7 +20,7 @@ export class Scanner {
                 match = line.replace(regex.title_page, '\n$1').split(regex.splitter).reverse();
 
                 for (let item of match) {
-                    let pair = item.replace(regex.cleaner, '').split(/\:\n*/);
+                    let pair = item.replace(regex.cleaner, '').split(/:\n*/);
 
                     this.tokens.push({ type: pair[0].trim().toLowerCase().replace(' ', '_'), is_title: true, text: pair[1].trim() });
                 }
@@ -46,7 +46,7 @@ export class Scanner {
 
             /** centered */
             if (match = line.match(regex.centered)) {
-                this.tokens.push({ type: 'centered', text: match[0].replace(/>|</g, '') });
+                this.tokens.push({ type: 'centered', text: match[0].replace(/[><]/g, '') });
                 continue;
             }
 
@@ -83,7 +83,7 @@ export class Scanner {
                         this.tokens.push({ type: 'dual_dialogue_begin' });
                     }
 
-                    dual = match[3] ? true : false;
+                    dual = !!match[3];
                     continue;
                 }
             }
@@ -114,7 +114,7 @@ export class Scanner {
 
             /** lyrics */
             if (match = line.match(regex.lyrics)) {
-                this.tokens.push({ type: 'lyrics', text: match[0].replace(/^~(?![ ])/gm, '') });
+                this.tokens.push({ type: 'lyrics', text: match[0].replace(/^~(?! )/gm, '') });
                 continue;
             }
 
@@ -131,7 +131,7 @@ export class Scanner {
             }
 
             // everything else is action -- remove `!` for forced action
-            this.tokens.push({ type: 'action', text: line.replace(/^!(?![ ])/gm, '') });
+            this.tokens.push({ type: 'action', text: line.replace(/^!(?! )/gm, '') });
         }
 
         return this.tokens.reverse();

@@ -4,9 +4,8 @@ import { Token } from './token';
 import { Lexer } from './lexer';
 
 export class Scanner {
-    private tokens: Token[] = [];
-
     tokenize(script: string): Token[] {
+        const tokens: Token[] = []
         // reverse the array so that dual dialog can be constructed bottom up
         const source: string[] = new Lexer().reconstruct(script).split(regex.capturingSplitter).reverse();
 
@@ -31,7 +30,7 @@ export class Scanner {
                 for (const item of match) {
                     let pair = item.replace(regex.cleaner, '').split(/:\n*/);
                     linePosition -= (pair[1].match(regex.newline) || []).length + 1;
-                    this.tokens.push({ type: pair[0].trim().toLowerCase().replace(' ', '_'), is_title: true, text: pair[1].trim(), line_number: linePosition });
+                    tokens.push({ type: pair[0].trim().toLowerCase().replace(' ', '_'), is_title: true, text: pair[1].trim(), line_number: linePosition });
                 }
                 continue;
             }
@@ -48,20 +47,20 @@ export class Scanner {
                         text = text.replace(regex.scene_number, '');
                     }
 
-                    this.tokens.push({ type: 'scene_heading', text: text, scene_number: num || undefined, line_number: lineNumber });
+                    tokens.push({ type: 'scene_heading', text: text, scene_number: num || undefined, line_number: lineNumber });
                 }
                 continue;
             }
 
             /** centered */
             if (match = line.match(regex.centered)) {
-                this.tokens.push({ type: 'centered', text: match[0].replace(/[><]/g, ''), line_number: lineNumber });
+                tokens.push({ type: 'centered', text: match[0].replace(/[><]/g, ''), line_number: lineNumber });
                 continue;
             }
 
             /** transitions */
             if (match = line.match(regex.transition)) {
-                this.tokens.push({ type: 'transition', text: match[1] || match[2], line_number: lineNumber });
+                tokens.push({ type: 'transition', text: match[1] || match[2], line_number: lineNumber });
                 continue;
             }
 
@@ -73,26 +72,26 @@ export class Scanner {
 
                     // iterating from the bottom up, so push dialogue blocks in reverse order
                     if (match[3]) {
-                        this.tokens.push({ type: 'dual_dialogue_end', line_number: linePosition });
+                        tokens.push({ type: 'dual_dialogue_end', line_number: linePosition });
                     }
 
-                    this.tokens.push({ type: 'dialogue_end', line_number: linePosition });
+                    tokens.push({ type: 'dialogue_end', line_number: linePosition });
 
                     let parts: string[] = match[4].split(/(\(.+\))(?:\n+)/).reverse();
 
                     for (const part of parts) {
                         if (part.length > 0) {
                             linePosition -= (part.trim().match(regex.newline) || []).length
-                            this.tokens.push({ type: regex.parenthetical.test(part) ? 'parenthetical' : 'dialogue', text: part, line_number: linePosition });
+                            tokens.push({ type: regex.parenthetical.test(part) ? 'parenthetical' : 'dialogue', text: part, line_number: linePosition });
                             linePosition--;
                         }
                     }
 
-                    this.tokens.push({ type: 'character', text: name.trim(), line_number: lineNumber });
-                    this.tokens.push({ type: 'dialogue_begin', dual: match[3] ? 'right' : dual ? 'left' : undefined, line_number: lineNumber });
+                    tokens.push({ type: 'character', text: name.trim(), line_number: lineNumber });
+                    tokens.push({ type: 'dialogue_begin', dual: match[3] ? 'right' : dual ? 'left' : undefined, line_number: lineNumber });
 
                     if (dual) {
-                        this.tokens.push({ type: 'dual_dialogue_begin', line_number: lineNumber });
+                        tokens.push({ type: 'dual_dialogue_begin', line_number: lineNumber });
                     }
 
                     dual = !!match[3];
@@ -102,49 +101,49 @@ export class Scanner {
 
             /** section */
             if (match = line.match(regex.section)) {
-                this.tokens.push({ type: 'section', text: match[2], depth: match[1].length, line_number: lineNumber });
+                tokens.push({ type: 'section', text: match[2], depth: match[1].length, line_number: lineNumber });
                 continue;
             }
 
             /** synopsis */
             if (match = line.match(regex.synopsis)) {
-                this.tokens.push({ type: 'synopsis', text: match[1], line_number: lineNumber });
+                tokens.push({ type: 'synopsis', text: match[1], line_number: lineNumber });
                 continue;
             }
 
             /** notes */
             if (match = line.match(regex.note)) {
-                this.tokens.push({ type: 'note', text: match[1], line_number: lineNumber });
+                tokens.push({ type: 'note', text: match[1], line_number: lineNumber });
                 continue;
             }
 
             /** boneyard */
             if (match = line.match(regex.boneyard)) {
-                this.tokens.push({ type: match[0][0] === '/' ? 'boneyard_begin' : 'boneyard_end', line_number: lineNumber });
+                tokens.push({ type: match[0][0] === '/' ? 'boneyard_begin' : 'boneyard_end', line_number: lineNumber });
                 continue;
             }
 
             /** lyrics */
             if (match = line.match(regex.lyrics)) {
-                this.tokens.push({ type: 'lyrics', text: match[0].replace(/^~(?! )/gm, ''), line_number: lineNumber });
+                tokens.push({ type: 'lyrics', text: match[0].replace(/^~(?! )/gm, ''), line_number: lineNumber });
                 continue;
             }
 
             /** page breaks */
             if (regex.page_break.test(line)) {
-                this.tokens.push({ type: 'page_break', line_number: lineNumber });
+                tokens.push({ type: 'page_break', line_number: lineNumber });
                 continue;
             }
 
             /** line breaks */
             if (regex.line_break.test(line)) {
-                this.tokens.push({ type: 'line_break', line_number: lineNumber });
+                tokens.push({ type: 'line_break', line_number: lineNumber });
                 continue;
             }
 
             // everything else is action -- remove `!` for forced action
-            this.tokens.push({ type: 'action', text: line.replace(/^!(?! )/gm, ''), line_number: lineNumber });
+            tokens.push({ type: 'action', text: line.replace(/^!(?! )/gm, ''), line_number: lineNumber });
         }
-        return this.tokens.reverse();
+        return tokens.reverse();
     }
 }

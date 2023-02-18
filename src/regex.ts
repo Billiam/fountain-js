@@ -34,6 +34,10 @@ export const regex = {
     underline: /(_(?=.+_))(.+?)(_)/g,
 
     splitter: /\n{2,}/g,
+    capturingSplitter: /(\n{2,})/g,
+    newlines: /^\n{2,}$/,
+    newline: /\n/g,
+
     cleaner: /^\n+|\n+$/,
     standardizer: /\r\n|\r/g,
     whitespacer: /^\t+|^ {3,}/gm

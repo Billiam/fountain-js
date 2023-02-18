@@ -24,7 +24,8 @@ describe('Fountain Markup Parser', () => {
             },
             tokens: [{
                 type: 'action',
-                text: 'It was a cold and clear morning.'
+                text: 'It was a cold and clear morning.',
+                line_number: 0
             }]
         };
 
@@ -37,7 +38,8 @@ describe('Fountain Markup Parser', () => {
         let actual: Token[] = fountain.parse(action, true).tokens;
         let expected: Token[] = [{
                 type: 'action',
-                text: 'William enters -- and there stands Anna.'
+                text: 'William enters -- and there stands Anna.',
+                line_number: 0
         }];
 
         expect(expected).toEqual(actual);
@@ -50,7 +52,8 @@ describe('Fountain Markup Parser', () => {
         let actual: Token[] = fountain.parse(action, true).tokens;
         let expected: Token[] = [{
                 type: 'action',
-                text: 'TIRES SCREECHING...<br />Joe is looking at his phone for the direction.'
+                text: 'TIRES SCREECHING...<br />Joe is looking at his phone for the direction.',
+                line_number: 0
         }];
 
         expect(expected).toEqual(actual);

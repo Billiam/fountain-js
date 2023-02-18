@@ -5,4 +5,5 @@ export interface Token {
     scene_number?: string,
     dual?: string,
     depth?: number
+    line_number?: number
 }

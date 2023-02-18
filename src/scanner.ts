@@ -25,7 +25,7 @@ export class Scanner {
             lineNumber -= lineNewlines + 1;
 
             /** title page */
-            if (regex.title_page.test(line)) {
+            if (regex.title_page.test(line) && lineNumber === 0) {
                 match = line.replace(regex.title_page, '\n$1').split(regex.splitter).reverse();
                 let linePosition = lineNumber + lineNewlines
                 for (const item of match) {

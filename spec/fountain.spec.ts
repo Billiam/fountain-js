@@ -85,6 +85,24 @@ describe('Fountain Markup Parser', () => {
         expect(expected).toEqual(actual);
     });
 
+    it('should ignore unrecognized title fields', () => {
+        const title_page = `Title:
+                            _**BRICK & STEEL**_
+                        Meta: Custom Content`;
+
+        let actual: Script = fountain.parse(title_page);
+        let expected: Script = {
+            title: 'BRICK & STEEL',
+            html: {
+                title_page: '<h1><span class="bold underline">BRICK & STEEL</span></h1>',
+                script: ''
+            },
+            tokens: undefined
+        };
+
+        expect(expected).toEqual(actual);
+    });
+
     it('should parse title page line numbers', () => {
         const title_page = `Title:
                             _**BRICK & STEEL**_

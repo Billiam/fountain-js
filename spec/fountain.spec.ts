@@ -345,6 +345,18 @@ describe('Inline markdown lexer', () => {
         expect(expected).toBe(actual);
     });
 
+    it('should parse boneyard comments', () => {
+        const content = `/* this is a 
+multiline comment
+*/
+.OPENING TITLES`
+        let output: Script = fountain.parse(content, true)
+        let actual = output.html.script;
+        let expected = '<h3>OPENING TITLES</h3>';
+
+        expect(expected).toBe(actual);
+    });
+
     it('should parse inline markdown', () => {
         const inlineText = '_***bold italics underline***_ _**bold underline**_ _*italic underline*_ ***bold italics*** **bold** *italics* _underline_';
         let output: Script = fountain.parse(inlineText);

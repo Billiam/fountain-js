@@ -2,7 +2,7 @@ import { regex } from './regex';
 
 export class Lexer {
     reconstruct(script: string) {
-        return script.replace(regex.boneyard, '\n$1\n')
+        return script.replace(/\/\*[\S\s]*?\*\//gm, comment => comment.replace(/[^\n]+/g, ''))
             .replace(regex.standardizer, '\n')
             .replace(regex.cleaner, '')
             .replace(regex.whitespacer, '');
@@ -44,6 +44,6 @@ export class InlineLexer extends Lexer {
             }
         }
 
-        return line.replace(/\[star]/g, '*').replace(/\[underline]/g, '_').trim();
+        return line.replace(/\[{\[{star}]}]/g, '*').replace(/\[{\[{underline}]}]/g, '_').trim();
     }
 }

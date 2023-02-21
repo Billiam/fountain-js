@@ -9,7 +9,6 @@ export class Scanner {
         // reverse the array so that dual dialog can be constructed bottom up
         const source: string[] = new Lexer().reconstruct(script).split(regex.capturingSplitter).reverse();
 
-        let line: string;
         let dual: boolean;
         let lineNumber: number = (script.match(regex.newline) || []).length + 1;
         const firstLine = source.length - 1
@@ -115,12 +114,6 @@ export class Scanner {
             /** notes */
             if (match = line.match(regex.note)) {
                 tokens.push({ type: 'note', text: match[1], line_number: lineNumber });
-                continue;
-            }
-
-            /** boneyard */
-            if (match = line.match(regex.boneyard)) {
-                tokens.push({ type: match[0][0] === '/' ? 'boneyard_begin' : 'boneyard_end', line_number: lineNumber });
                 continue;
             }
 

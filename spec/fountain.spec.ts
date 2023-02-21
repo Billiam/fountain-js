@@ -71,7 +71,7 @@ describe('Fountain Markup Parser', () => {
                             Next Level Productions
                             1588 Mission Dr.
                             Solvang, CA 93463`;
-        
+
         let actual: Script = fountain.parse(title_page);
         let expected: Script = {
             title: 'BRICK & STEEL FULL RETIRED',
@@ -141,7 +141,7 @@ describe('Fountain Markup Parser', () => {
             },
             tokens: undefined  
         };
-        
+
         expect(expected).toEqual(actual);
     });
 
@@ -268,7 +268,7 @@ describe('Inline markdown lexer', () => {
     it('should parse bold italics underline', () => {
         const inlineText = '_***bold italics underline***_';
         let output: Script = fountain.parse(inlineText);
-        
+
         let actual = output.html.script;
         let expected = '<p><span class=\"bold italic underline\">bold italics underline</span></p>';
 
@@ -363,6 +363,30 @@ multiline comment
 
         let actual = output.html.script;
         let expected = '<p><span class=\"bold italic underline\">bold italics underline</span> <span class=\"bold underline\">bold underline</span> <span class=\"italic underline\">italic underline</span> <span class=\"bold italic\">bold italics</span> <span class=\"bold\">bold</span> <span class=\"italic\">italics</span> <span class=\"underline\">underline</span></p>';
+
+        expect(expected).toBe(actual);
+    });
+    it('should ignore non-flanking inline markdown', () => {
+        const inlineText = `_ underline_ _underline _ * italic* *italic *
+
+                            ** bold** **bold **
+
+                            *** bold italics*** ***bold italics ***
+
+                            _*** bold italics underline***_ _***bold italics underline ***_
+
+                            _** bold underline**_ _**bold underline **_
+
+                            _* italic underline*_ _*italic underline *_`;
+        let output: Script = fountain.parse(inlineText);
+
+        let actual = output.html.script;
+        let expected = '<p>_ underline_ _underline _ * italic* *italic *</p>' +
+                       '<p>** bold** **bold **</p>' +
+                       '<p>*** bold italics*** ***bold italics ***</p>' +
+                       '<p>_*** bold italics underline***_ _***bold italics underline ***_</p>' +
+                       '<p>_** bold underline**_ _**bold underline **_</p>' +
+                       '<p>_* italic underline*_ _*italic underline *_</p>';
 
         expect(expected).toBe(actual);
     });

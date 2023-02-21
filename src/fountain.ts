@@ -77,7 +77,7 @@ export class Fountain {
             case 'dialogue_end': return '</div>';
             case 'dual_dialogue_end': return '</div>';
 
-            case 'section': return '<p class="section" data-depth="' + token.depth + '"' + lineNumber +'>' + token.text + '</p>';
+            case 'section': return '';
             case 'synopsis': return '<p class="synopsis"' + lineNumber +'>' + token.text + '</p>';
 
             case 'note': return '<!-- ' + token.text + ' -->';

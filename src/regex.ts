@@ -1,7 +1,7 @@
 export const regex = {
     title_page: /^([^\n]+:)/gim,
 
-    scene_heading: /^((?:\*{0,3}_?)?(?:(?:int|ext|est|i\/e)[. ]).+)|^(?:\.(?!\.+))(.+)/i,
+    scene_heading: /^((?:\*{0,3}_?)?(?:(?:int|i)\.?\/(?:ext|e)|int|ext|est)[. ].*)|^(?:\.(?!\.+))(.+)/i,
     scene_number: /( *#(.+)# *)/,
 
     transition: /^((?:FADE (?:TO BLACK|OUT)|CUT TO BLACK)\.|.+ TO:)|^(?:> *)(.+)/,

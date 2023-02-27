@@ -120,13 +120,28 @@ describe('Fountain Markup Parser', () => {
         let expected: Script = {
             title: 'BRICK & STEEL FULL RETIRED',
             html: {
-                title_page: '<h1 data-line="1"><span class="bold underline">BRICK & STEEL</span><br /><span class="bold underline">FULL RETIRED</span></h1><p class="credit" data-line="3">Written by</p><p class="authors" data-line="4">Stu Maschwitz</p><p class="source" data-line="5">Story by KTM</p><p class="draft-date" data-line="6">1/27/2012</p><p class="contact" data-line="7">Next Level Productions<br />1588 Mission Dr.<br />Solvang, CA 93463</p>',
+                title_page: '<h1 data-line="0"><span class="bold underline">BRICK & STEEL</span><br /><span class="bold underline">FULL RETIRED</span></h1><p class="credit" data-line="3">Written by</p><p class="authors" data-line="4">Stu Maschwitz</p><p class="source" data-line="5">Story by KTM</p><p class="draft-date" data-line="6">1/27/2012</p><p class="contact" data-line="7">Next Level Productions<br />1588 Mission Dr.<br />Solvang, CA 93463</p>',
                 script: ''
             },
             tokens: undefined
         };
 
         expect(expected).toEqual(actual);
+    });
+
+    it ('should parse line numbers with title and content', () => {
+        const content =  `Title: Brick
+                            
+content
+
+more content
+
+
+`;
+        const tokens : Token[] = fountain.parse(content, true, true).tokens;
+        expect(tokens[0].line_number).toEqual(0);
+        expect(tokens[1].line_number).toEqual(2);
+        expect(tokens[2].line_number).toEqual(4);
     });
 
     it('should parse a scene heading', () => {

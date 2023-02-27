@@ -4,7 +4,6 @@ export class Lexer {
     reconstruct(script: string) {
         return script.replace(/\/\*[\S\s]*?\*\//gm, comment => comment.replace(/[^\n]+/g, ''))
             .replace(regex.standardizer, '\n')
-            .replace(regex.cleaner, '')
             .replace(regex.whitespacer, '');
     }
 }

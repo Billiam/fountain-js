@@ -28,9 +28,17 @@ export class Scanner {
                 match = line.replace(regex.title_page, '\n$1').split(regex.splitter).reverse();
                 let linePosition = lineNumber + lineNewlines
                 for (const item of match) {
-                    let pair = item.replace(regex.cleaner, '').split(/:\n*/);
-                    linePosition -= (pair[1].match(regex.newline) || []).length + 1;
-                    tokens.push({ type: pair[0].trim().toLowerCase().replace(' ', '_'), is_title: true, text: pair[1].trim(), line_number: linePosition });
+                    const [key, value] = item.split(/:/, 2);
+
+                    linePosition -= (value.match(regex.newline) || []).length;
+
+                    tokens.push({
+                        type: key.trim().toLowerCase().replace(' ', '_'),
+                        is_title: true,
+                        text: value.trim(),
+                        line_number: linePosition
+                    });
+                    linePosition--;
                 }
                 continue;
             }
@@ -136,7 +144,10 @@ export class Scanner {
             }
 
             // everything else is action -- remove `!` for forced action
-            tokens.push({ type: 'action', text: line.replace(/^!(?! )/gm, ''), line_number: lineNumber });
+            const actionText = line.replace(/^!(?! )/gm, '');
+            if (actionText) {
+                tokens.push({type: 'action', text: actionText, line_number: lineNumber});
+            }
         }
         return tokens.reverse();
     }

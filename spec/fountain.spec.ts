@@ -171,11 +171,21 @@ more content
         let output: Script = fountain.parse(text);
         let actual = output.html.script;
 
-        let expected = '<h3>OPENING TITLES</h3><p class="centered">BRICK & STEEL <br /> FULL RETIRED</p><h2>SMASH CUT TO:</h2>';
+        let expected = '<h3>OPENING TITLES</h3><p class="centered">BRICK & STEEL<br />FULL RETIRED</p><h2>SMASH CUT TO:</h2>';
 
         expect(expected).toBe(actual);
     });
+    it ('should strip  leading/trailing spaces from centered text', () => {
+        const text = `>     center line 1     <
+                      >     center line 2     <`
 
+        const expected = '<p class="centered">center line 1<br />center line 2</p>'
+
+        const output: Script = fountain.parse(text);
+        const actual = output.html.script;
+
+        expect(expected).toBe(actual)
+    })
     it('should parse dialog', () => {
         const dialog = `STEEL (O.S.)
                     Beer's ready!

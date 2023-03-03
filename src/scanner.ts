@@ -62,7 +62,7 @@ export class Scanner {
 
             /** centered */
             if (match = line.match(regex.centered)) {
-                tokens.push({ type: 'centered', text: match[0].replace(/[><]/g, ''), line_number: lineNumber });
+                tokens.push({ type: 'centered', text: match[0].replace(/ *[><] */g, ''), line_number: lineNumber });
                 continue;
             }
 

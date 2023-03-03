@@ -9,7 +9,7 @@ export interface Script {
         title_page: string,
         script: string
     },
-    tokens?: Token[]
+    tokens: Token[]
 }
 
 export class Fountain {
@@ -22,7 +22,7 @@ export class Fountain {
         this.inlineLex = new InlineLexer;
     }
 
-    parse(script: string, getTokens?: boolean, lineNumbers?: boolean): Script {
+    parse(script: any, getTokens?: boolean, lineNumbers?: boolean): Script {
         // throw an error if given script source isn't a string
         if (typeof script === 'undefined' || script === null)
             throw new Error("Script is undefined or null.");
@@ -36,13 +36,13 @@ export class Fountain {
             let title = this.tokens.find(token => token.type === 'title');
 
             return {
-                title: title ? this.inlineLex.reconstruct(title.text)
+                title: title?.text != null ? this.inlineLex.reconstruct(title.text)
                         .replace('<br />', ' ').replace(/<(?:.|\n)*?>/g, '') : undefined,
                 html: {
                     title_page: this.tokens.filter(token => token.is_title).map(token => this.to_html(token, lineNumbers)).join(''),
                     script: this.tokens.filter(token => !token.is_title).map(token => this.to_html(token, lineNumbers)).join('')
                 },
-                tokens: getTokens ? this.tokens : undefined
+                tokens: getTokens ? this.tokens : []
             }
         } catch (error) {
             error.message +=
@@ -52,7 +52,9 @@ export class Fountain {
     }
 
     to_html(token: Token, lineNumbers?: Boolean) {
-        token.text = this.inlineLex.reconstruct(token.text);
+        if (token.text != null) {
+            token.text = this.inlineLex.reconstruct(token.text);
+        }
         const lineNumber: String = lineNumbers ? ' data-line="' + token.line_number + '"' : ''
         switch (token.type) {
             case 'title': return '<h1' + lineNumber +'>' + token.text + '</h1>';

@@ -79,7 +79,7 @@ describe('Fountain Markup Parser', () => {
                 title_page: '<h1><span class="bold underline">BRICK & STEEL</span><br /><span class="bold underline">FULL RETIRED</span></h1><p class="credit">Written by</p><p class="authors">Stu Maschwitz</p><p class="source">Story by KTM</p><p class="draft-date">1/27/2012</p><p class="contact">Next Level Productions<br />1588 Mission Dr.<br />Solvang, CA 93463</p>',
                 script: ''
             },
-            tokens: undefined
+            tokens: []
         };
 
         expect(expected).toEqual(actual);
@@ -97,7 +97,7 @@ describe('Fountain Markup Parser', () => {
                 title_page: '<h1><span class="bold underline">BRICK & STEEL</span></h1>',
                 script: ''
             },
-            tokens: undefined
+            tokens: []
         };
 
         expect(expected).toEqual(actual);
@@ -123,7 +123,7 @@ describe('Fountain Markup Parser', () => {
                 title_page: '<h1 data-line="0"><span class="bold underline">BRICK & STEEL</span><br /><span class="bold underline">FULL RETIRED</span></h1><p class="credit" data-line="3">Written by</p><p class="authors" data-line="4">Stu Maschwitz</p><p class="source" data-line="5">Story by KTM</p><p class="draft-date" data-line="6">1/27/2012</p><p class="contact" data-line="7">Next Level Productions<br />1588 Mission Dr.<br />Solvang, CA 93463</p>',
                 script: ''
             },
-            tokens: undefined
+            tokens: []
         };
 
         expect(expected).toEqual(actual);
@@ -154,7 +154,7 @@ more content
                 title_page: '', 
                 script: "<h3>EXT. BRICK'S PATIO - DAY</h3>" 
             },
-            tokens: undefined  
+            tokens: []  
         };
 
         expect(expected).toEqual(actual);
@@ -175,6 +175,19 @@ more content
 
         expect(expected).toBe(actual);
     });
+
+    it ('parses partial title', () => {
+        const text = `Title: 
+                      
+                      > BRICK & STEEL <`
+        let output: Script = fountain.parse(text);
+        let actual = output.html.script;
+
+        let expected = '<p class="centered">BRICK & STEEL</p>';
+
+        expect(expected).toBe(actual);
+    });
+
     it ('should strip  leading/trailing spaces from centered text', () => {
         const text = `>     center line 1     <
                       >     center line 2     <`

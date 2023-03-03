@@ -24,9 +24,6 @@ export class InlineLexer extends Lexer {
     };
 
     reconstruct(line: string) {
-        if (!line) 
-            return;
-
         let match: RegExp;
         const styles = ['bold_italic_underline', 'bold_underline', 'italic_underline', 'bold_italic', 'bold', 'italic', 'underline'];
 

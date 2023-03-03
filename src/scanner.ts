@@ -9,12 +9,12 @@ export class Scanner {
         // reverse the array so that dual dialog can be constructed bottom up
         const source: string[] = new Lexer().reconstruct(script).split(regex.capturingSplitter).reverse();
 
-        let dual: boolean;
+        let dual: boolean = false;
         let lineNumber: number = (script.match(regex.newline) || []).length + 1;
         const firstLine = source.length - 1
 
         for (const [index, line] of source.entries()) {
-            let match: string[];
+            let match: RegExpMatchArray | null;
 
             const lineNewlines = (line.match(regex.newline) || []).length
             if (regex.newlines.test(line)) {
@@ -25,7 +25,7 @@ export class Scanner {
 
             /** title page */
             if (regex.title_page.test(line) && index === firstLine) {
-                match = line.replace(regex.title_page, '\n$1').split(regex.splitter).reverse();
+                const match : string[] = line.replace(regex.title_page, '\n$1').split(regex.splitter).reverse();
                 let linePosition = lineNumber + lineNewlines
                 for (const item of match) {
                     const [key, value] = item.split(/:/, 2);
@@ -44,13 +44,13 @@ export class Scanner {
             }
 
             /** scene headings */
-            if (match = line.match(regex.scene_heading)) {
+            if ((match = line.match(regex.scene_heading)) !== null) {
                 let text = match[1] || match[2];
-                let meta: RegExpMatchArray;
-                let num: string;
+                let meta: RegExpMatchArray | null;
+                let num: string | undefined;
 
                 if (text.indexOf('  ') !== text.length - 2) {
-                    if (meta = text.match(regex.scene_number)) {
+                    if ((meta = text.match(regex.scene_number)) !== null) {
                         num = meta[2];
                         text = text.replace(regex.scene_number, '');
                     }
@@ -61,19 +61,19 @@ export class Scanner {
             }
 
             /** centered */
-            if (match = line.match(regex.centered)) {
+            if ((match = line.match(regex.centered)) !== null) {
                 tokens.push({ type: 'centered', text: match[0].replace(/ *[><] */g, ''), line_number: lineNumber });
                 continue;
             }
 
             /** transitions */
-            if (match = line.match(regex.transition)) {
+            if ((match = line.match(regex.transition)) !== null) {
                 tokens.push({ type: 'transition', text: match[1] || match[2], line_number: lineNumber });
                 continue;
             }
 
             /** dialogue blocks - characters, parentheticals and dialogue */
-            if (match = line.match(regex.dialogue)) {
+            if ((match = line.match(regex.dialogue)) !== null) {
                 let name = match[1] || match[2];
                 if (name.indexOf('  ') !== name.length - 2) {
                     let linePosition = lineNumber + lineNewlines
@@ -85,7 +85,7 @@ export class Scanner {
 
                     tokens.push({ type: 'dialogue_end', line_number: linePosition });
 
-                    let parts: string[] = match[4].split(/(\(.+\))(?:\n+)/).reverse();
+                    let parts: string[] = match[4].split(/(\(.+\))\n+/).reverse();
 
                     for (const part of parts) {
                         if (part.length > 0) {
@@ -108,25 +108,25 @@ export class Scanner {
             }
 
             /** section */
-            if (match = line.match(regex.section)) {
+            if ((match = line.match(regex.section)) !== null) {
                 tokens.push({ type: 'section', text: match[2], depth: match[1].length, line_number: lineNumber });
                 continue;
             }
 
             /** synopsis */
-            if (match = line.match(regex.synopsis)) {
+            if ((match = line.match(regex.synopsis)) !== null) {
                 tokens.push({ type: 'synopsis', text: match[1], line_number: lineNumber });
                 continue;
             }
 
             /** notes */
-            if (match = line.match(regex.note)) {
+            if ((match = line.match(regex.note)) !== null) {
                 tokens.push({ type: 'note', text: match[1], line_number: lineNumber });
                 continue;
             }
 
             /** lyrics */
-            if (match = line.match(regex.lyrics)) {
+            if ((match = line.match(regex.lyrics)) !== null) {
                 tokens.push({ type: 'lyrics', text: match[0].replace(/^~(?! )/gm, ''), line_number: lineNumber });
                 continue;
             }

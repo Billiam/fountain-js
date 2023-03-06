@@ -80,7 +80,7 @@ export class Fountain {
             case 'dual_dialogue_end': return '</div>';
 
             case 'section': return '';
-            case 'synopsis': return '<p class="synopsis"' + lineNumber +'>' + token.text + '</p>';
+            case 'synopsis': return '';
 
             case 'note': return '<!-- ' + token.text + ' -->';
             case 'boneyard_begin': return '<!-- ';

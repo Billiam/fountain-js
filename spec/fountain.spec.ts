@@ -47,14 +47,48 @@ describe('Fountain Markup Parser', () => {
 
     it('should parse multiple lines of forced action', () => {
         const action = `!TIRES SCREECHING...
-                    Joe is looking at his phone for the direction.`;
+  Joe is looking at his phone for the direction.`;
 
         let actual: Token[] = fountain.parse(action, true).tokens;
         let expected: Token[] = [{
                 type: 'action',
-                text: 'TIRES SCREECHING...<br />Joe is looking at his phone for the direction.',
+                text: 'TIRES SCREECHING...<br />&nbsp;&nbsp;Joe is looking at his phone for the direction.',
                 line_number: 0
         }];
+
+        expect(expected).toEqual(actual);
+    });
+
+    it('should respect action indentation', () => {
+        const action = `It was a cold and clear morning.
+    
+   line indented with 3 spaces
+    
+		line indented with 2 tabs`;
+
+        let actual: Script = fountain.parse(action, true);
+        let expected: Script = {
+            title: undefined,
+            html: {
+                title_page: '',
+                script: "<p>It was a cold and clear morning.</p><p>&nbsp;&nbsp;&nbsp;line indented with 3 spaces</p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;line indented with 2 tabs</p>"
+            },
+            tokens: [{
+                type: 'action',
+                text: 'It was a cold and clear morning.',
+                line_number: 0
+            },
+            {
+                type: 'action',
+                text: '&nbsp;&nbsp;&nbsp;line indented with 3 spaces',
+                line_number: 2
+            },
+            {
+                type: 'action',
+                text: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;line indented with 2 tabs',
+                line_number: 4
+            }]
+        };
 
         expect(expected).toEqual(actual);
     });
@@ -419,15 +453,15 @@ multiline comment
     it('should ignore non-flanking inline markdown', () => {
         const inlineText = `_ underline_ _underline _ * italic* *italic *
 
-                            ** bold** **bold **
+** bold** **bold **
 
-                            *** bold italics*** ***bold italics ***
+*** bold italics*** ***bold italics ***
 
-                            _*** bold italics underline***_ _***bold italics underline ***_
+_*** bold italics underline***_ _***bold italics underline ***_
 
-                            _** bold underline**_ _**bold underline **_
+_** bold underline**_ _**bold underline **_
 
-                            _* italic underline*_ _*italic underline *_`;
+_* italic underline*_ _*italic underline *_`;
         let output: Script = fountain.parse(inlineText);
 
         let actual = output.html.script;

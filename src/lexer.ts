@@ -4,7 +4,8 @@ export class Lexer {
     reconstruct(script: string) {
         return script.replace(/\/\*[\S\s]*?\*\//gm, comment => comment.replace(/[^\n]+/g, ''))
             .replace(regex.standardizer, '\n')
-            .replace(regex.whitespacer, '');
+            // clear empty lines
+            .replace(/^[\t ]+$/gm, '')
     }
 }
 
@@ -23,14 +24,18 @@ export class InlineLexer extends Lexer {
         underline: '<span class="underline">$2</span>'
     };
 
-    reconstruct(line: string) {
+    reconstruct(line: string, preserveIndentation: boolean = false) {
         let match: RegExp;
         const styles = ['bold_italic_underline', 'bold_underline', 'italic_underline', 'bold_italic', 'bold', 'italic', 'underline'];
 
         line = line.replace(regex.note_inline, this.inline.note)
             .replace(/\\\*/g, '[{[{star}]}]')
             .replace(/\\_/g, '[{[{underline}]}]')
-            .replace(/\n/g, this.inline.line_break);
+
+        if (preserveIndentation) {
+            line = line.replace(/^( +)/gm, (_match, spaces) => '&nbsp;'.repeat(spaces.length))
+        }
+        line = line.replace(/\n/g, this.inline.line_break);
 
         for (let style of styles) {
             match = regex[style];
@@ -40,6 +45,6 @@ export class InlineLexer extends Lexer {
             }
         }
 
-        return line.replace(/\[{\[{star}]}]/g, '*').replace(/\[{\[{underline}]}]/g, '_').trim();
+        return line.replace(/\[{\[{star}]}]/g, '*').replace(/\[{\[{underline}]}]/g, '_').trim()
     }
 }

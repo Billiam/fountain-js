@@ -13,8 +13,9 @@ export class Scanner {
         let lineNumber: number = (script.match(regex.newline) || []).length + 1;
         const firstLine = source.length - 1
 
-        for (const [index, line] of source.entries()) {
+        for (const [index, rawLine] of source.entries()) {
             let match: RegExpMatchArray | null;
+            const line = rawLine.replace(regex.whitespacer, '')
 
             const lineNewlines = (line.match(regex.newline) || []).length
             if (regex.newlines.test(line)) {
@@ -144,7 +145,8 @@ export class Scanner {
             }
 
             // everything else is action -- remove `!` for forced action
-            const actionText = line.replace(/^!(?! )/gm, '');
+            // normalize tab indentation to 4 spaces
+            const actionText = rawLine.replace(/^!(?! )/gm, '').replace(/^(\t+)/gm, (_m, tabs) => '    '.repeat(tabs.length))
             if (actionText) {
                 tokens.push({type: 'action', text: actionText, line_number: lineNumber});
             }

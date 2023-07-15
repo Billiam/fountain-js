@@ -53,7 +53,7 @@ export class Fountain {
 
     to_html(token: Token, lineNumbers?: Boolean) {
         if (token.text != null) {
-            token.text = this.inlineLex.reconstruct(token.text);
+            token.text = this.inlineLex.reconstruct(token.text, token.type === 'action');
         }
         const lineNumber: String = lineNumbers ? ' data-line="' + token.line_number + '"' : ''
         switch (token.type) {
